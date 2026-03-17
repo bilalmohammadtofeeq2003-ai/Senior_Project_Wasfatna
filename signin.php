@@ -28,20 +28,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sign In</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=4" />
+  <script>var t=localStorage.getItem("wasfatna-theme");if(t)document.documentElement.setAttribute("data-theme",t);</script>
   <style>
-    body{display:flex;min-height:100vh;align-items:center;justify-content:center;}
-    .auth{width:min(420px,92vw);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);
+    body{display:flex;min-height:100vh;align-items:center;justify-content:center;background:var(--bg);color:var(--text);}
+    .auth{width:min(420px,92vw);background:var(--card);border:1px solid var(--line);
       padding:18px;border-radius:18px}
     .auth h1{margin:0 0 12px}
-    .auth input{width:100%;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.10);
-      background:rgba(11,18,32,.55);color:#e9eef7;margin:8px 0;outline:none}
+    .auth input{width:100%;padding:12px;border-radius:14px;border:1px solid var(--line);
+      background:rgba(11,18,32,.55);color:var(--text);margin:8px 0;outline:none}
     .auth .row{display:flex;gap:10px;margin-top:10px}
     .msg{color:#ff8a8a;margin:8px 0}
+    .auth-close{position:absolute;top:10px;right:10px;background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;padding:4px 8px;border-radius:8px;}
+    .auth-close:hover{background:rgba(255,255,255,.08);color:var(--text)}
+    .auth{position:relative}
+    [data-theme="light"] .auth input{background:#f9f9f9;border-color:rgba(0,0,0,.15)}
+    [data-theme="light"] .auth-close:hover{background:rgba(0,0,0,.08)}
   </style>
 </head>
 <body>
   <div class="auth">
+    <a href="index.php" class="auth-close" title="Back to home">✕</a>
     <h1>Welcome back</h1>
     <?php if ($message): ?><div class="msg"><?= htmlspecialchars($message) ?></div><?php endif; ?>
 
