@@ -39,13 +39,15 @@ $prefs = $stmt->fetch() ?: ['spice_level'=>'medium','diet'=>'none','likes'=>'','
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Your Profile</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=4" />
+  <script>var t=localStorage.getItem("wasfatna-theme");if(t)document.documentElement.setAttribute("data-theme",t);</script>
   <style>
+    body{background:var(--bg);color:var(--text)}
     .wrap{max-width:900px;margin:0 auto;padding:22px}
-    .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.10);border-radius:18px;padding:16px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .input,.select,.textarea{width:100%}
-    .msg{color:#9ff3d7;margin:10px 0}
+    .msg{color:var(--accent2);margin:10px 0}
   </style>
 </head>
 <body>
@@ -60,6 +62,7 @@ $prefs = $stmt->fetch() ?: ['spice_level'=>'medium','diet'=>'none','likes'=>'','
       </div>
       <nav class="nav">
         <a class="nav-link" href="index.php">Home</a>
+        <button id="themeToggle" class="btn btn-ghost btn-small" type="button">🌙 Dark</button>
         <a class="nav-link" href="signout.php">Sign out</a>
       </nav>
     </div>
@@ -104,5 +107,6 @@ $prefs = $stmt->fetch() ?: ['spice_level'=>'medium','diet'=>'none','likes'=>'','
       </form>
     </div>
   </div>
+  <script src="app.js?v=4"></script>
 </body>
 </html>
