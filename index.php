@@ -7,7 +7,8 @@ require 'auth.php';
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Wasfatna — Dynamic Meal Suggestion</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=4" />
+  <script>var t=localStorage.getItem("wasfatna-theme");if(t)document.documentElement.setAttribute("data-theme",t);</script>
 </head>
 
 <body>
@@ -22,13 +23,14 @@ require 'auth.php';
     </div>
 
     <nav class="nav">
+      <a href="profile.php" class="nav-link">Profile</a>
       <?php if (is_logged_in()): ?>
-        <a href="profile.php" class="nav-link">Profile</a>
         <a href="signout.php" class="nav-link">Sign out</a>
       <?php else: ?>
         <a href="signin.php" class="nav-link">Sign in</a>
         <a href="signup.php" class="nav-link">Sign up</a>
       <?php endif; ?>
+      <button id="themeToggle" class="btn btn-ghost btn-small">🌙 Dark</button>
       <button id="aboutBtn" class="btn btn-ghost">About / CVs</button>
     </nav>
   </header>
@@ -76,7 +78,7 @@ require 'auth.php';
   </aside>
 
   <div id="backdrop" class="backdrop" hidden></div>
-  <script src="app.js"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>
 
