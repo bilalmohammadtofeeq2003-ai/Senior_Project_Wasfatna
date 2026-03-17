@@ -1,3 +1,25 @@
+// ---------- Theme toggle ----------
+const themeToggleBtn = document.getElementById("themeToggle");
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  if (themeToggleBtn) {
+    themeToggleBtn.textContent = theme === "light" ? "\u2600\uFE0F Light" : "\uD83C\uDF19 Dark";
+  }
+}
+
+// Sync button label with current theme (set by inline head script)
+const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+applyTheme(currentTheme);
+
+if (themeToggleBtn) {
+  themeToggleBtn.addEventListener("click", () => {
+    const next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+    localStorage.setItem("wasfatna-theme", next);
+    applyTheme(next);
+  });
+}
+
 // ---------- Helpers ----------
 function normalizeIngredient(str) {
   return str.trim().toLowerCase();
@@ -215,99 +237,105 @@ const aboutClose = document.getElementById("aboutClose");
 const backdrop = document.getElementById("backdrop");
 
 function openAbout() {
+  if (!aboutPanel || !backdrop) return;
   aboutPanel.classList.add("open");
   aboutPanel.setAttribute("aria-hidden", "false");
   backdrop.hidden = false;
 }
 
 function closeAbout() {
+  if (!aboutPanel || !backdrop) return;
   aboutPanel.classList.remove("open");
   aboutPanel.setAttribute("aria-hidden", "true");
   backdrop.hidden = true;
 }
 
 // Events
-aboutBtn.addEventListener("click", openAbout);
-aboutClose.addEventListener("click", closeAbout);
-backdrop.addEventListener("click", closeAbout);
+if (aboutBtn) aboutBtn.addEventListener("click", openAbout);
+if (aboutClose) aboutClose.addEventListener("click", closeAbout);
+if (backdrop) backdrop.addEventListener("click", closeAbout);
 
-clearBtn.addEventListener("click", () => {
-  ingredientsInput.value = "";
-  resultsEl.innerHTML = `<div class="empty">No results yet — enter ingredients and click “Suggest Recipes”.</div>`;
-  resultsCount.textContent = "0";
-});
-
-suggestBtn.addEventListener("click", () => {
-  const ingredients = uniq(parseIngredients(ingredientsInput.value));
-  const spice = spiceEl.value;
-  const sweetness = sweetnessEl.value;
-  const goal = goalEl.value;
-  const diet = dietEl.value;
-
-  if (!ingredients.length) {
-    resultsEl.innerHTML = `<div class="empty">Please enter at least 1 ingredient (comma separated).</div>`;
+if (clearBtn && ingredientsInput && resultsEl && resultsCount) {
+  clearBtn.addEventListener("click", () => {
+    ingredientsInput.value = "";
+    resultsEl.innerHTML = `<div class="empty">No results yet — enter ingredients and click “Suggest Recipes”.</div>`;
     resultsCount.textContent = "0";
-    return;
-  }
+  });
+}
 
-  // Filter by diet + preference
-  const candidates = RECIPES
-    .filter(r => matchesDiet(r, diet))
-    .filter(r => matchesPreferences(r, spice, sweetness, goal))
-    .map(r => {
-      const { score, requiredMissing } = scoreRecipe(r, ingredients);
-      return { recipe: r, score, requiredMissing };
-    })
-    .sort((a, b) => b.score - a.score);
+if (suggestBtn && ingredientsInput && resultsEl && resultsCount) {
+  suggestBtn.addEventListener("click", () => {
+    const ingredients = uniq(parseIngredients(ingredientsInput.value));
+    const spice = spiceEl ? spiceEl.value : "any";
+    const sweetness = sweetnessEl ? sweetnessEl.value : "any";
+    const goal = goalEl ? goalEl.value : "any";
+    const diet = dietEl ? dietEl.value : "none";
 
-  // Keep only somewhat relevant results
-  const finalList = candidates.filter(x => x.score > 2);
+    if (!ingredients.length) {
+      resultsEl.innerHTML = `<div class="empty">Please enter at least 1 ingredient (comma separated).</div>`;
+      resultsCount.textContent = "0";
+      return;
+    }
 
-  resultsCount.textContent = String(finalList.length);
+    // Filter by diet + preference
+    const candidates = RECIPES
+      .filter(r => matchesDiet(r, diet))
+      .filter(r => matchesPreferences(r, spice, sweetness, goal))
+      .map(r => {
+        const { score, requiredMissing } = scoreRecipe(r, ingredients);
+        return { recipe: r, score, requiredMissing };
+      })
+      .sort((a, b) => b.score - a.score);
 
-  if (!finalList.length) {
-    resultsEl.innerHTML = `
-      <div class="empty">
-        No matching recipes found for these filters. Try removing a dietary restriction,
-        or add more ingredients.
-      </div>
-    `;
-    return;
-  }
+    // Keep only somewhat relevant results
+    const finalList = candidates.filter(x => x.score > 2);
 
-  resultsEl.innerHTML = finalList.map(({ recipe, requiredMissing }) => {
-    const subs = formatSubstitutions(requiredMissing, recipe, diet);
-    const personalizedSteps = tweakStepsForTaste(recipe.steps, spice, sweetness, goal);
+    resultsCount.textContent = String(finalList.length);
 
-    const tagHtml = (recipe.tags || []).map(t => `<span class="tag">${t}</span>`).join("");
-
-    const missingHtml = requiredMissing.length
-      ? `<div class="small"><strong>Missing required:</strong> ${requiredMissing.join(", ")}</div>`
-      : `<div class="small"><strong>All required ingredients found ✅</strong></div>`;
-
-    const subsHtml = subs
-      ? `<div class="small"><strong>Substitutions / Notes:</strong><br>${subs.map(s => `• ${s}`).join("<br>")}</div>`
-      : `<div class="small"><strong>Substitutions:</strong> none needed</div>`;
-
-    const stepsHtml = `
-      <div class="steps">
-        <div class="small"><strong>Steps</strong></div>
-        <ol>
-          ${personalizedSteps.map(s => `<li>${s}</li>`).join("")}
-        </ol>
-      </div>
-    `;
-
-    return `
-      <article class="recipe">
-        <div class="recipe-top">
-          <h4>${recipe.name}</h4>
-          <div class="tags">${tagHtml}</div>
+    if (!finalList.length) {
+      resultsEl.innerHTML = `
+        <div class="empty">
+          No matching recipes found for these filters. Try removing a dietary restriction,
+          or add more ingredients.
         </div>
-        ${missingHtml}
-        ${subsHtml}
-        ${stepsHtml}
-      </article>
-    `;
-  }).join("");
-});
+      `;
+      return;
+    }
+
+    resultsEl.innerHTML = finalList.map(({ recipe, requiredMissing }) => {
+      const subs = formatSubstitutions(requiredMissing, recipe, diet);
+      const personalizedSteps = tweakStepsForTaste(recipe.steps, spice, sweetness, goal);
+
+      const tagHtml = (recipe.tags || []).map(t => `<span class="tag">${t}</span>`).join("");
+
+      const missingHtml = requiredMissing.length
+        ? `<div class="small"><strong>Missing required:</strong> ${requiredMissing.join(", ")}</div>`
+        : `<div class="small"><strong>All required ingredients found ✅</strong></div>`;
+
+      const subsHtml = subs
+        ? `<div class="small"><strong>Substitutions / Notes:</strong><br>${subs.map(s => `• ${s}`).join("<br>")}</div>`
+        : `<div class="small"><strong>Substitutions:</strong> none needed</div>`;
+
+      const stepsHtml = `
+        <div class="steps">
+          <div class="small"><strong>Steps</strong></div>
+          <ol>
+            ${personalizedSteps.map(s => `<li>${s}</li>`).join("")}
+          </ol>
+        </div>
+      `;
+
+      return `
+        <article class="recipe">
+          <div class="recipe-top">
+            <h4>${recipe.name}</h4>
+            <div class="tags">${tagHtml}</div>
+          </div>
+          ${missingHtml}
+          ${subsHtml}
+          ${stepsHtml}
+        </article>
+      `;
+    }).join("");
+  });
+}
