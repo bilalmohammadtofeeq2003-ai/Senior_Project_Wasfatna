@@ -7,7 +7,8 @@ require 'auth.php';
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Wasfatna — Find Your Recipe</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=4" />
+  <script>var t=localStorage.getItem("wasfatna-theme");if(t)document.documentElement.setAttribute("data-theme",t);</script>
 </head>
 
 <body>
@@ -22,13 +23,14 @@ require 'auth.php';
     </div>
 
     <nav class="nav">
+      <a href="profile.php" class="nav-link">Profile</a>
       <?php if (is_logged_in()): ?>
-        <a href="profile.php" class="nav-link">Profile</a>
         <a href="signout.php" class="nav-link">Sign out</a>
       <?php else: ?>
         <a href="signin.php" class="nav-link">Sign in</a>
         <a href="signup.php" class="nav-link">Sign up</a>
       <?php endif; ?>
+      <button id="themeToggle" class="btn btn-ghost btn-small">🌙 Dark</button>
       <button id="aboutBtn" class="btn btn-ghost">About / CVs</button>
     </nav>
   </header>
@@ -119,6 +121,27 @@ require 'auth.php';
     </footer>
   </main>
 
-  <script src="app.js"></script>
+  <!-- About Side Panel -->
+  <aside id="aboutPanel" class="sidepanel" aria-hidden="true">
+    <div class="sidepanel-top">
+      <div>
+        <div class="sidepanel-title">About &amp; CVs</div>
+      </div>
+      <button id="aboutClose" class="btn btn-ghost">✕</button>
+    </div>
+    <div class="sidepanel-content">
+      <p>
+        Wasfatna is a smart recipe suggestion system that reduces food waste
+        by recommending meals based on available ingredients and user preferences.
+      </p>
+      <h4>Team Members</h4>
+      <div class="cv-card"><div class="cv-name">Ahammed Ismail</div><div class="muted">202201478</div></div>
+      <div class="cv-card"><div class="cv-name">Bilal Mohammad Tofeeq</div><div class="muted">202200507</div></div>
+      <div class="cv-card"><div class="cv-name">Bassem Mohammad Irshad Mohammed Islam</div><div class="muted">202201552</div></div>
+    </div>
+  </aside>
+
+  <div id="backdrop" class="backdrop" hidden></div>
+  <script src="app.js?v=4"></script>
 </body>
 </html>
