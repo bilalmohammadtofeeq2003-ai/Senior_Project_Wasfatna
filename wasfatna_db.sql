@@ -78,7 +78,6 @@ VALUES
 
 (1,'Harees','Slow cooked wheat and meat.',20,180,6,'Medium',470,'harees.jpg'),
 
-
 (1,'Thareed','Bread soaked in flavorful stew.',20,60,5,'Medium',520,'thareed.jpg'),
 
 (1,'Chicken Madrouba','Creamy rice with shredded chicken.',20,70,6,'Medium',640,'chicken_madrouba.jpg'),
